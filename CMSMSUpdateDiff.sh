@@ -361,6 +361,7 @@ if $verify_checksums; then
 
   if $continue_checksum; then
     echo "Verifying file checksums..."
+    echo " Checksum file:  $checksum_file"
     echo " Showing only failed checksums"
     echo
     # edit checksum_file to accommodate admin_dir_custom
