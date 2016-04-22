@@ -16,8 +16,6 @@
 #   Doesn't seem to cause it to fail, but should probably fix anyway.
 # todo(ryto):  check admin_dir setting and skip some sed commands if we can
 #   See Steps #4, #8, and #10
-# todo(ryto):  handle multiple matches for checksum_file
-#   look into  ls cms*$cmsms_version_new*checksum.dat | wc -l
 # todo(ryto):  handle zero matches for diff_file
 # todo(ryto):  handle zero matches for checksum_file
 #   for the above two entries, we could let it fail and have the script
@@ -335,13 +333,23 @@ while true; do
 done
 
 if $verify_checksums; then
+  # It's unlikely that there would be multiple checksum files unless
+  # the user uploaded more than one copy.  We'll check anyway to be
+  # safe.
+  checksum_file_glob="cms*$cmsms_version_new*checksum.dat"
+  checksum_file="cmsmadesimple-1.12.2-english-test-checksum.dat"
+  checksum_file_count=$(ls $checksum_file_glob | wc -l)
+  if [ $checksum_file_count -gt 1 ]; then
+    # multiple diff files present
+    echo "There are too many checksum files.  Please choose one."
+    checksum_file=$(selectFile "$checksum_file_glob")
+  else
+    checksum_file=$(ls $checksum_file_glob)
+  fi
+
   echo "Verifying file checksums..."
   echo " Showing only failed checksums"
   echo
-  checksum_file="cmsmadesimple-1.12.1-english-checksum.dat"
-  checksum_file="cmsmadesimple-1.12.2-english-test-checksum.dat"
-  #checksum_file="cmsmadesimple-1.12.2-english-checksum.dat"
-  checksum_file=$(ls cms*$cmsms_version_new*checksum.dat)
   # edit checksum_file to accommodate admin_dir_custom
   sed -i "s#\./$admin_dir_default/#\./$admin_dir_custom/#g" $checksum_file
 
@@ -359,6 +367,6 @@ if $verify_checksums; then
 fi
 
 echo
-echo "The update script is complete."
+echo "The update script is complete!"
 echo
 echo
