@@ -15,10 +15,19 @@
 #   I think this works now?  Need to test more.
 # todo(ryto):  cleanup checksum code
 #   may be able to remove lines for /tmp and /install
+# todo(ryto):  check CMSMSDir with trailing slash
+#   /home/rytoex/scripts/cmsms-update-script/cmsms_test//config.php
+#   Doesn't seem to cause it to fail, but should probably fix anyway.
+# todo(ryto):  check admin_dir setting and skip some sed commands if we can
+#   See Steps #4, #8, and #10
 # todo(ryto):  handle multiple matches for diff_file
 #   look into  ls cms*diff-$cmsms_version_current*.tar.gz | wc -l
 # todo(ryto):  handle multiple matches for checksum_file
 #   look into  ls cms*$cmsms_version_new*checksum.dat | wc -l
+# todo(ryto):  handle zero matches for diff_file
+# todo(ryto):  handle zero matches for checksum_file
+#   for the above two entries, we could let it fail and have the script
+#   notice diff_file/checksum_file are empty, but that wouldn't be graceful
 # todo(ryto):  usage/help message
 # todo(ryto):  see if this works with a full non-diff update
 #   it _should_ work, but will have to change diff_file detection
@@ -40,21 +49,22 @@
 
 
 # Overall Steps
-# 1. Get site dir
-# 2. Backup config file
-# 3. Enable owner write permission on config file
-# 4. Edit config file admin dir setting to default location
-# 5. Move the admin dir to default location
-# 6. Unpack diff
-# 7. Move the admin dir to custom location
-# 8. Edit config file admin dir setting to custom location
-# 9. Restore original permissions on config file
+#  1. Get site dir
+#  2. Backup config file
+#  3. Enable owner write permission on config file
+#  4. Edit config file admin dir setting to default location
+#  5. Move the admin dir to default location
+#  6. Unpack diff
+#  7. Move the admin dir to custom location
+#  8. Edit config file admin dir setting to custom location
+#  9. Restore original permissions on config file
+# 10. Optional: Verify checksums
 
 
 # 1. Get site dir
 # Setup variables
 # CMSMS Web Directory (Full Path)
-CMSMSDir="/home/rytoex/scripts/cmsms-update-script/cmsms_test"
+CMSMSDir="/home/rytoex/scripts/cmsms-update-script/cmsms_min_test"
 
 
 echo
@@ -311,7 +321,8 @@ if $verify_checksums; then
   echo
   checksum_file="cmsmadesimple-1.12.1-english-checksum.dat"
   checksum_file="cmsmadesimple-1.12.2-english-test-checksum.dat"
-  #checksum_file=$(ls cms*$cmsms_version_new*checksum.dat)
+  #checksum_file="cmsmadesimple-1.12.2-english-checksum.dat"
+  checksum_file=$(ls cms*$cmsms_version_new*checksum.dat)
   sed -i "s#\./admin_dir_default/#\./$admin_dir_custom/#g" $checksum_file
 
   script_dir=$PWD
