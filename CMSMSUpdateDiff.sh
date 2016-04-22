@@ -16,10 +16,6 @@
 #   Doesn't seem to cause it to fail, but should probably fix anyway.
 # todo(ryto):  check admin_dir setting and skip some sed commands if we can
 #   See Steps #4, #8, and #10
-# todo(ryto):  handle zero matches for diff_file
-# todo(ryto):  handle zero matches for checksum_file
-#   for the above two entries, we could let it fail and have the script
-#   notice diff_file/checksum_file are empty, but that wouldn't be graceful
 # todo(ryto):  usage/help message
 # todo(ryto):  see if this works with a full non-diff update
 #   it _should_ work, but will have to change diff_file detection
@@ -161,9 +157,15 @@ diff_file="cmsmadesimple-english-diff-1.12.1-1.12.2.tar.gz"
 diff_file_glob="cms*diff-$cmsms_version_current-*.tar.gz"
 diff_file_count=$(ls $diff_file_glob | wc -l)
 if [ $diff_file_count -gt 1 ]; then
-  # multiple diff files present
-  echo "There are too many diff files.  Please choose one."
+  # multiple valid diff files present
+  echo "There are too many valid diff files.  Please choose one."
   diff_file=$(selectFile "$diff_file_glob")
+elif [ $diff_file_count -eq 0 ]; then
+  # no valid diff files present
+  echo "There doesn't seem to be a valid diff file."
+  echo "Please add a diff file to this directory and rerun this script."
+  echo
+  exit 3
 else
   diff_file=$(ls $diff_file_glob)
 fi
@@ -306,8 +308,10 @@ echo
 # Check that the diff update version and the new current version match
 if [ $cmsms_version_new == $cmsms_version_current_check ]; then
   echo "The update should be complete!"
+  echo
 else
   echo "There may have been a problem.  Please double check your install."
+  echo
   exit 2
 fi
 
@@ -340,30 +344,40 @@ if $verify_checksums; then
   checksum_file="cmsmadesimple-1.12.2-english-test-checksum.dat"
   checksum_file_count=$(ls $checksum_file_glob | wc -l)
   if [ $checksum_file_count -gt 1 ]; then
-    # multiple diff files present
+    # multiple checksum files present
     echo "There are too many checksum files.  Please choose one."
     checksum_file=$(selectFile "$checksum_file_glob")
+    continue_checksum=true
+  elif [ $checksum_file_count -eq 0 ]; then
+    # no valid checksum files present
+    echo "There doesn't seem to be a valid checksum file."
+    #echo "Please add a checksum file to this directory and rerun this script."
+    echo "Skipping the checksum verification."
+    continue_checksum=false
   else
     checksum_file=$(ls $checksum_file_glob)
+    continue_checksum=true
   fi
 
-  echo "Verifying file checksums..."
-  echo " Showing only failed checksums"
-  echo
-  # edit checksum_file to accommodate admin_dir_custom
-  sed -i "s#\./$admin_dir_default/#\./$admin_dir_custom/#g" $checksum_file
+  if $continue_checksum; then
+    echo "Verifying file checksums..."
+    echo " Showing only failed checksums"
+    echo
+    # edit checksum_file to accommodate admin_dir_custom
+    sed -i "s#\./$admin_dir_default/#\./$admin_dir_custom/#g" $checksum_file
 
-  script_dir="$PWD"
-  #echo $script_dir
-  cd $CMSMSDir
-  #echo $PWD
+    script_dir="$PWD"
+    #echo $script_dir
+    cd $CMSMSDir
+    #echo $PWD
 
-  # Verify file checksums
-  md5sum --check --quiet $script_dir/$checksum_file
+    # Verify file checksums
+    md5sum --check --quiet $script_dir/$checksum_file
 
-  # edit checksum_file to accommodate admin_dir_custom
-  cd $script_dir
-  sed -i "s#\./$admin_dir_custom/#\./$admin_dir_default/#g" $checksum_file
+    # edit checksum_file to accommodate admin_dir_custom
+    cd $script_dir
+    sed -i "s#\./$admin_dir_custom/#\./$admin_dir_default/#g" $checksum_file
+  fi
 fi
 
 echo
