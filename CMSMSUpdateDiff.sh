@@ -114,7 +114,8 @@ while true; do
 	esac
 done
 
-
+# Current datestamp
+datestamp=$(date +%Y-%m-%d)
 # Config file
 configFileName="config.php"
 # Version file
@@ -134,8 +135,26 @@ admin_dir_custom=$(grep -Po "($config\['admin_dir'\] = ')\K(.*)(?=')" $configFil
 if [ -z $admin_dir_custom ]; then
   admin_dir_custom=$admin_dir_default
 fi
-# Current datestamp
-datestamp=$(date +%Y-%m-%d)
+
+# Ask the user to confirm admin_dir_custom
+while true; do
+  echo "The setting for the CMSMS Admin Dir is:  $admin_dir_custom"
+	read -e -p "Is this correct? (y/n) " -i "y" yn
+	case $yn in
+		[Yy]* )
+      echo "Okay!"
+      echo
+      break
+      ;;
+		[Nn]* )
+      echo "Sorry about that."
+      read -e -p "Where is the CMSMS Admin Dir? " admin_dir_custom
+      ;;
+		* ) echo "Please answer yes (Y/y) or no (N/n).";;
+	esac
+done
+
+
 # Current CMSMS Version
 #cmsms_version_current=$(grep -Po 'CMS_VERSION = "([0-9.]+)"' $versionFile | cut -d ' ' -f3 | tr -d '"')
 cmsms_version_current=$(grep -Po 'CMS_VERSION = "\K([0-9.]+)(?=")' $versionFile)
@@ -156,26 +175,6 @@ fi
 
 # New CMSMS Version
 cmsms_version_new=$(echo $diff_file | grep -Po "\-\K([0-9.]*)(?=.tar.gz)")
-
-
-# Ask the user to confirm admin_dir_custom
-while true; do
-  echo "The setting for the CMSMS Admin Dir is:  $admin_dir_custom"
-	read -e -p "Is this correct? (y/n) " -i "y" yn
-	case $yn in
-		[Yy]* )
-      echo "Okay!"
-      echo
-      break
-      ;;
-		[Nn]* )
-      echo "Sorry about that."
-      read -e -p "Where is the CMSMS Admin Dir? " admin_dir_custom
-      ;;
-		* ) echo "Please answer yes (Y/y) or no (N/n).";;
-	esac
-done
-
 
 # Ask the user to confirm diff_file
 while true; do
