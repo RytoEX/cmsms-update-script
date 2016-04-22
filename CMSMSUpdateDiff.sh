@@ -77,6 +77,7 @@ function selectFile() {
 # Setup variables
 # CMSMS Web Directory (Full Path)
 CMSMSDir="/home/rytoex/scripts/cmsms-update-script/cmsms_min_test"
+CMSMSDir="$PWD/cmsms_test"
 
 
 echo
@@ -348,7 +349,7 @@ if $verify_checksums; then
   # edit checksum_file to accommodate admin_dir_custom
   sed -i "s#\./$admin_dir_default/#\./$admin_dir_custom/#g" $checksum_file
 
-  script_dir=$PWD
+  script_dir="$PWD"
   #echo $script_dir
   cd $CMSMSDir
   #echo $PWD
