@@ -8,11 +8,6 @@
 # Version: 0.8
 
 
-# todo(ryto):  maybe run the CMSMS checksum script? or a regular md5 check?
-#   could run it while admin_dir is still set to "admin"
-#   or alter the checksum file to match the custom admin_dir setting
-#
-#   I think this works now?  Need to test more.
 # todo(ryto):  cleanup checksum code
 #   may be able to remove lines for /tmp and /install
 #   maybe provide user an option to ignore /tmp and /install ?
@@ -324,6 +319,7 @@ if $verify_checksums; then
   checksum_file="cmsmadesimple-1.12.2-english-test-checksum.dat"
   #checksum_file="cmsmadesimple-1.12.2-english-checksum.dat"
   checksum_file=$(ls cms*$cmsms_version_new*checksum.dat)
+  # edit checksum_file to accommodate admin_dir_custom
   sed -i "s#\./$admin_dir_default/#\./$admin_dir_custom/#g" $checksum_file
 
   script_dir=$PWD
@@ -333,6 +329,10 @@ if $verify_checksums; then
 
   # Verify file checksums
   md5sum --check --quiet $script_dir/$checksum_file
+
+  # edit checksum_file to accommodate admin_dir_custom
+  cd $script_dir
+  sed -i "s#\./$admin_dir_custom/#\./$admin_dir_default/#g" $checksum_file
 fi
 
 echo
