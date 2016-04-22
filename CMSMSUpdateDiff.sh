@@ -161,7 +161,7 @@ cmsms_version_current=$(grep -Po 'CMS_VERSION = "\K([0-9.]+)(?=")' $versionFile)
 
 # Diff file
 diff_file="cmsmadesimple-english-diff-1.12.1-1.12.2.tar.gz"
-diff_file_glob="cms*diff-$cmsms_version_current*.tar.gz"
+diff_file_glob="cms*diff-$cmsms_version_current-*.tar.gz"
 #diff_file=$(ls cms*diff*$cmsms_version_current*.tar.gz)
 diff_file_count=$(ls $diff_file_glob | wc -l)
 if [ $diff_file_count -gt 1 ]; then
