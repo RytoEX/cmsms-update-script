@@ -340,7 +340,7 @@ if $verify_checksums; then
   # It's unlikely that there would be multiple checksum files unless
   # the user uploaded more than one copy.  We'll check anyway to be
   # safe.
-  checksum_file_glob="cms*$cmsms_version_new*checksum.dat"
+  checksum_file_glob="cms*-$cmsms_version_new-*checksum.dat"
   checksum_file="cmsmadesimple-1.12.2-english-test-checksum.dat"
   checksum_file_count=$(ls $checksum_file_glob | wc -l)
   if [ $checksum_file_count -gt 1 ]; then
