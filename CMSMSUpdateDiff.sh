@@ -4,7 +4,7 @@
 #
 # Author:  RytoEX
 # Created: April 19, 2016
-# Updated: April 21, 2016
+# Updated: April 22, 2016
 # Version: 0.8
 
 
@@ -15,6 +15,7 @@
 #   I think this works now?  Need to test more.
 # todo(ryto):  cleanup checksum code
 #   may be able to remove lines for /tmp and /install
+#   maybe provide user an option to ignore /tmp and /install ?
 # todo(ryto):  check CMSMSDir with trailing slash
 #   /home/rytoex/scripts/cmsms-update-script/cmsms_test//config.php
 #   Doesn't seem to cause it to fail, but should probably fix anyway.
@@ -323,7 +324,7 @@ if $verify_checksums; then
   checksum_file="cmsmadesimple-1.12.2-english-test-checksum.dat"
   #checksum_file="cmsmadesimple-1.12.2-english-checksum.dat"
   checksum_file=$(ls cms*$cmsms_version_new*checksum.dat)
-  sed -i "s#\./admin_dir_default/#\./$admin_dir_custom/#g" $checksum_file
+  sed -i "s#\./$admin_dir_default/#\./$admin_dir_custom/#g" $checksum_file
 
   script_dir=$PWD
   #echo $script_dir
