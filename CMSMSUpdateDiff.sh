@@ -123,10 +123,19 @@ datestamp=$(date +%Y-%m-%d)
 # Current CMSMS Version
 #cmsms_version_current=$(grep -Po 'CMS_VERSION = "([0-9.]+)"' $versionFile | cut -d ' ' -f3 | tr -d '"')
 cmsms_version_current=$(grep -Po 'CMS_VERSION = "\K([0-9.]+)(?=")' $versionFile)
+
 # Diff file
 diff_file="cmsmadesimple-english-diff-1.12.1-1.12.2.tar.gz"
 #diff_file=$(ls cms*diff*$cmsms_version_current*.tar.gz)
-diff_file=$(ls cms*diff-$cmsms_version_current*.tar.gz)
+diff_file_count=$(ls cms*diff-$cmsms_version_current*.tar.gz | wc -l)
+if [ $diff_file_count -gt 1 ]; then
+  # This is probably rude.  Don't do this.  Find a better way.
+  echo "Too many diff files.  Please remove all but one."
+  exit 4
+else
+  diff_file=$(ls cms*diff-$cmsms_version_current*.tar.gz)
+fi
+
 # New CMSMS Version
 cmsms_version_new=$(echo $diff_file | grep -Po "\-\K([0-9.]*)(?=.tar.gz)")
 
@@ -192,7 +201,7 @@ while true; do
       echo "Sorry about that."
       echo "Please rerun this script to start over."
       echo
-      exit 1
+      exit 3
       ;;
 		* ) echo "Please answer yes (Y/y) or no (N/n).";;
 	esac
