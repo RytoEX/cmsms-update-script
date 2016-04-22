@@ -153,7 +153,6 @@ done
 cmsms_version_current=$(grep -Po 'CMS_VERSION = "\K([0-9.]+)(?=")' $versionFile)
 
 # Get a diff file
-diff_file="cmsmadesimple-english-diff-1.12.1-1.12.2.tar.gz"
 diff_file_glob="cms*diff-$cmsms_version_current-*.tar.gz"
 diff_file_count=$(ls $diff_file_glob | wc -l)
 if [ $diff_file_count -gt 1 ]; then
@@ -341,7 +340,6 @@ if $verify_checksums; then
   # the user uploaded more than one copy.  We'll check anyway to be
   # safe.
   checksum_file_glob="cms*-$cmsms_version_new-*checksum.dat"
-  checksum_file="cmsmadesimple-1.12.2-english-test-checksum.dat"
   checksum_file_count=$(ls $checksum_file_glob | wc -l)
   if [ $checksum_file_count -gt 1 ]; then
     # multiple checksum files present
