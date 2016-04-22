@@ -16,8 +16,6 @@
 #   Doesn't seem to cause it to fail, but should probably fix anyway.
 # todo(ryto):  check admin_dir setting and skip some sed commands if we can
 #   See Steps #4, #8, and #10
-# todo(ryto):  handle multiple matches for diff_file
-#   look into  ls cms*diff-$cmsms_version_current*.tar.gz | wc -l
 # todo(ryto):  handle multiple matches for checksum_file
 #   look into  ls cms*$cmsms_version_new*checksum.dat | wc -l
 # todo(ryto):  handle zero matches for diff_file
