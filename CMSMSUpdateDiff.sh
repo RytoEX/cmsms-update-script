@@ -160,15 +160,13 @@ done
 #cmsms_version_current=$(grep -Po 'CMS_VERSION = "([0-9.]+)"' $versionFile | cut -d ' ' -f3 | tr -d '"')
 cmsms_version_current=$(grep -Po 'CMS_VERSION = "\K([0-9.]+)(?=")' $versionFile)
 
-# Diff file
+# Get a diff file
 diff_file="cmsmadesimple-english-diff-1.12.1-1.12.2.tar.gz"
 diff_file_glob="cms*diff-$cmsms_version_current-*.tar.gz"
-#diff_file=$(ls cms*diff*$cmsms_version_current*.tar.gz)
 diff_file_count=$(ls $diff_file_glob | wc -l)
 if [ $diff_file_count -gt 1 ]; then
-  # This is probably rude.  Don't do this.  Find a better way.
-  echo "Too many diff files.  Please remove all but one."
-  #exit 4
+  # multiple diff files present
+  echo "There are too many diff files.  Please choose one."
   diff_file=$(selectFile "$diff_file_glob")
 else
   diff_file=$(ls $diff_file_glob)
