@@ -8,9 +8,6 @@
 # Version: 0.8
 
 
-# todo(ryto):  cleanup checksum code
-#   may be able to remove lines for /tmp and /install
-#   maybe provide user an option to ignore /tmp and /install ?
 # todo(ryto):  check CMSMSDir with trailing slash
 #   /home/rytoex/scripts/cmsms-update-script/cmsms_test//config.php
 #   Doesn't seem to cause it to fail, but should probably fix anyway.
