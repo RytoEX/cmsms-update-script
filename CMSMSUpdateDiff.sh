@@ -385,15 +385,19 @@ if $verify_checksums; then
     echo " Checksum file:  $checksum_file"
     echo " Showing only failed checksums"
     echo
-    # edit checksum_file to accommodate admin_dir_config if needed
+
+    # make a temp copy of the checksum file
+    checksum_file_temp="cmsms-checksum-temp-${datestamp}.dat"
+    cp -p "$checksum_file" "$checksum_file_temp"
+    # edit checksum file to accommodate admin_dir_config if needed
     if $hasCustomAdminDir; then
-      sed -i "s#\./$admin_dir_default/#\./$admin_dir_config/#g" $checksum_file
+      sed -i "s#\./$admin_dir_default/#\./$admin_dir_config/#g" $checksum_file_temp
     fi
 
     # if updating using a diff, remove checksums for ./install directory
     if $updateWithDiff; then
-      sed -i -r "s#.+ \*\./install/.+##g" $checksum_file
-      sed -i -e /^$/d $checksum_file
+      sed -i -r "s#.+ \*\./install/.+##g" $checksum_file_temp
+      sed -i -e /^$/d $checksum_file_temp
     fi
 
     script_dir="$PWD"
@@ -402,13 +406,16 @@ if $verify_checksums; then
     #echo $PWD
 
     # Verify file checksums
-    md5sum --check --quiet $script_dir/$checksum_file
+    md5sum --check --quiet $script_dir/$checksum_file_temp
 
-    # edit checksum_file to restore original admin_dir setting if needed
+    # edit checksum file to restore original admin_dir setting if needed
     cd $script_dir
     if $hasCustomAdminDir; then
-      sed -i "s#\./$admin_dir_config/#\./$admin_dir_default/#g" $checksum_file
+      sed -i "s#\./$admin_dir_config/#\./$admin_dir_default/#g" $checksum_file_temp
     fi
+
+    # remove temp checksum file if we want
+    rm "$checksum_file_temp"
   fi
 fi
 
