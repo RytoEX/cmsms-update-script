@@ -14,8 +14,6 @@
 # todo(ryto):  check CMSMSDir with trailing slash
 #   /home/rytoex/scripts/cmsms-update-script/cmsms_test//config.php
 #   Doesn't seem to cause it to fail, but should probably fix anyway.
-# todo(ryto):  check admin_dir setting and skip some sed commands if we can
-#   See Steps #4, #8, and #10
 # todo(ryto):  usage/help message
 # todo(ryto):  see if this works with a full non-diff update
 #   it _should_ work, but will have to change diff_file detection
