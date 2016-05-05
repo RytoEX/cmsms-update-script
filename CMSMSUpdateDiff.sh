@@ -121,12 +121,17 @@ versionFile=$CMSMSDir/$versionFileName
 configFilePerm=$(stat --printf '%a' $configFile)
 # Set default admin_dir
 admin_dir_default="admin"
+# Set flag for if there is a custom admin dir config setting
+hasCustomAdminDir=true
 # Check for custom admin_dir setting
 admin_dir_config_default="custom"
 admin_dir_config=$(grep -Po "($config\['admin_dir'\] = ')\K(.*)(?=')" $configFile)
+admin_dir_config=""
 # If admin_dir is not explicitly set, assume it's admin_dir_default ("admin")
-if [ -z $admin_dir_config ]; then
+# Set hasCustomAdminDir to false
+if [ -z $admin_dir_config ] || [ $admin_dir_config == $admin_dir_default ]; then
   admin_dir_config=$admin_dir_default
+  hasCustomAdminDir=false
 fi
 
 # Ask the user to confirm admin_dir_config
@@ -240,15 +245,25 @@ chmod u+w $configFile
 echo " Done!"
 
 # 4. Edit config file admin dir setting to default location
-echo "Editing admin_dir config..."
-oldConfigLine="\$config\['admin_dir'\] = '$admin_dir_config';"
-newConfigLine="\$config\['admin_dir'\] = '$admin_dir_default';"
-sed -i "s/$oldConfigLine/$newConfigLine/" $configFile
-echo " Done!"
+echo "Editing admin_dir config if needed..."
+if $hasCustomAdminDir; then
+  echo " CMSMS admin_dir had custom setting"
+  echo " Replacing"
+  echo "  \$config['admin_dir'] = '$admin_dir_config';"
+  echo "  with"
+  echo "  \$config['admin_dir'] = '$admin_dir_default';"
+  oldConfigLine="\$config\['admin_dir'\] = '$admin_dir_config';"
+  newConfigLine="\$config\['admin_dir'\] = '$admin_dir_default';"
+  sed -i "s/$oldConfigLine/$newConfigLine/" $configFile
+  echo " Done!"
+else
+  echo " No custom admin_dir setting."
+  echo " Skipping."
+fi
 
 # 5. Move the admin dir to default location
 echo "Rename admin_dir to default setting for the update if needed..."
-if [ $admin_dir_config != $admin_dir_default ]; then
+if $hasCustomAdminDir; then
   echo " CMSMS admin_dir had custom setting"
   echo " Renaming admin_dir to the default for the update..."
   echo " Renaming"
@@ -269,7 +284,7 @@ echo " Done!"
 
 # 7. Move the admin dir to custom location
 echo "Rename admin_dir back to custom setting if needed..."
-if [ $admin_dir_config != $admin_dir_default ]; then
+if $hasCustomAdminDir; then
   echo " CMSMS admin_dir had custom setting"
   echo " Renaming admin_dir back to custom setting..."
   echo " Renaming"
@@ -284,11 +299,21 @@ else
 fi
 
 # 8. Edit config file admin dir setting to custom location
-echo "Editing admin_dir config..."
-oldConfigLine="\$config\['admin_dir'\] = '$admin_dir_default';"
-newConfigLine="\$config\['admin_dir'\] = '$admin_dir_config';"
-sed -i "s/$oldConfigLine/$newConfigLine/" $configFile
-echo " Done!"
+echo "Editing admin_dir config if needed..."
+if $hasCustomAdminDir; then
+  echo " CMSMS admin_dir had custom setting"
+  echo " Replacing"
+  echo "  \$config['admin_dir'] = '$admin_dir_default';"
+  echo "  with"
+  echo "  \$config['admin_dir'] = '$admin_dir_config';"
+  oldConfigLine="\$config\['admin_dir'\] = '$admin_dir_default';"
+  newConfigLine="\$config\['admin_dir'\] = '$admin_dir_config';"
+  sed -i "s/$oldConfigLine/$newConfigLine/" $configFile
+  echo " Done!"
+else
+  echo " No custom admin_dir setting."
+  echo " Skipping."
+fi
 
 # 9. Restore original permissions on config file
 echo "Restoring config file permissions..."
@@ -362,8 +387,10 @@ if $verify_checksums; then
     echo " Checksum file:  $checksum_file"
     echo " Showing only failed checksums"
     echo
-    # edit checksum_file to accommodate admin_dir_config
-    sed -i "s#\./$admin_dir_default/#\./$admin_dir_config/#g" $checksum_file
+    # edit checksum_file to accommodate admin_dir_config if needed
+    if $hasCustomAdminDir; then
+      sed -i "s#\./$admin_dir_default/#\./$admin_dir_config/#g" $checksum_file
+    fi
 
     script_dir="$PWD"
     #echo $script_dir
