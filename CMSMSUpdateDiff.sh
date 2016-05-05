@@ -124,7 +124,6 @@ hasCustomAdminDir=true
 # Check for custom admin_dir setting
 admin_dir_config_default="custom"
 admin_dir_config=$(grep -Po "($config\['admin_dir'\] = ')\K(.*)(?=')" $configFile)
-admin_dir_config=""
 # If admin_dir is not explicitly set, assume it's admin_dir_default ("admin")
 # Set hasCustomAdminDir to false
 if [ -z $admin_dir_config ] || [ $admin_dir_config == $admin_dir_default ]; then
