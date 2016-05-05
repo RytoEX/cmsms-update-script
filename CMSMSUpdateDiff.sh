@@ -337,7 +337,7 @@ else
   exit 2
 fi
 
-# Maybe do checksum stuff here as a final check?
+# 10. Optional: Verify checksums
 while true; do
 	read -e -p "Do you want to verify the file checksums? (y/n) " -i "y" yn
 	case $yn in
@@ -350,9 +350,8 @@ while true; do
 		[Nn]* )
       verify_checksums=false;
       echo "Okay then."
-      echo "Exiting now."
       echo
-      exit
+      break
       ;;
 		* ) echo "Please answer yes (Y/y) or no (N/n).";;
 	esac
