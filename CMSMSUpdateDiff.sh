@@ -6,9 +6,9 @@
 # Created: April 19, 2016
 # Updated: May 5, 2016
 # Version: 0.8
+# Name:    Are We There Yet
 
 
-# todo(ryto):  usage/help message
 # todo(ryto):  see if this works with a full non-diff update
 #   it _should_ work, but will have to change diff_file detection
 # todo(ryto):  check minimum versions of bash, grep, tar, etc.
@@ -41,6 +41,13 @@
 # 10. Optional: Verify checksums
 
 
+script_author="RytoEX"
+script_updated="May 5, 2016"
+script_version="0.8"
+script_version_name="Are We There Yet"
+script_cmd="CMSMSUpdateDiff"
+
+
 # file select menu using file glob pattern in arg1
 function selectFile() {
   # first arg should be file glob pattern
@@ -55,6 +62,33 @@ function selectFile() {
     break
   done
 }
+
+# Usage and options
+usage="Usage: $script_cmd.sh [-hv] -- program to help perform CMS Made Simple 1.x updates
+
+where:
+  -h  show this help text and exit
+  -v  output version information and exit"
+
+while getopts ':hv' option; do
+  case "$option" in
+    h) echo "$usage"
+       exit
+       ;;
+    v) echo "$script_cmd $script_version"
+       exit
+       ;;
+    :) printf "missing argument for -%s\n" "$OPTARG" >&2
+       echo "$usage" >&2
+       exit 1
+       ;;
+   \?) printf "illegal option: -%s\n" "$OPTARG" >&2
+       echo "$usage" >&2
+       exit 1
+       ;;
+  esac
+done
+shift $((OPTIND - 1))
 
 
 # 1. Get site dir
