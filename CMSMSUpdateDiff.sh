@@ -396,7 +396,7 @@ if $verify_checksums; then
     # Verify file checksums
     md5sum --check --quiet $script_dir/$checksum_file
 
-    # edit checksum_file to accommodate admin_dir_config if needed
+    # edit checksum_file to restore original admin_dir setting if needed
     cd $script_dir
     if $hasCustomAdminDir; then
       sed -i "s#\./$admin_dir_config/#\./$admin_dir_default/#g" $checksum_file
