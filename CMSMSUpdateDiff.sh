@@ -2,11 +2,11 @@
 #
 # Help perform the CMS Made Simple (CMSMS) 1.x diff update process
 #
-# Author:  Ryan Foster
-# Created: April 19, 2016
-# Updated: May 5, 2016
-# Version: 0.8
-# Name:    Are We There Yet
+# Author:   Ryan Foster
+# Created:  April 19, 2016
+# Updated:  May 5, 2016
+# Version:  0.8
+# Name:     Are We There Yet
 #
 # CMSMSUpdateDiff - Help perform the CMS Made Simple (CMSMS) 1.x diff update process
 # Copyright (C) 2016  Ryan Foster
