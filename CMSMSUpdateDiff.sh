@@ -122,16 +122,16 @@ configFilePerm=$(stat --printf '%a' $configFile)
 # Set default admin_dir
 admin_dir_default="admin"
 # Check for custom admin_dir setting
-admin_dir_custom_default="custom"
-admin_dir_custom=$(grep -Po "($config\['admin_dir'\] = ')\K(.*)(?=')" $configFile)
+admin_dir_config_default="custom"
+admin_dir_config=$(grep -Po "($config\['admin_dir'\] = ')\K(.*)(?=')" $configFile)
 # If admin_dir is not explicitly set, assume it's admin_dir_default ("admin")
-if [ -z $admin_dir_custom ]; then
-  admin_dir_custom=$admin_dir_default
+if [ -z $admin_dir_config ]; then
+  admin_dir_config=$admin_dir_default
 fi
 
-# Ask the user to confirm admin_dir_custom
+# Ask the user to confirm admin_dir_config
 while true; do
-  echo "The setting for the CMSMS Admin Dir is:  $admin_dir_custom"
+  echo "The setting for the CMSMS Admin Dir is:  $admin_dir_config"
 	read -e -p "Is this correct? (y/n) " -i "y" yn
 	case $yn in
 		[Yy]* )
@@ -141,7 +141,7 @@ while true; do
       ;;
 		[Nn]* )
       echo "Sorry about that."
-      read -e -p "Where is the CMSMS Admin Dir? " admin_dir_custom
+      read -e -p "Where is the CMSMS Admin Dir? " admin_dir_config
       ;;
 		* ) echo "Please answer yes (Y/y) or no (N/n).";;
 	esac
@@ -194,7 +194,7 @@ echo
 echo "Let's review your settings."
 echo
 echo "CMSMS directory:         $CMSMSDir"
-echo "CMSMS admin_dir config:  $admin_dir_custom"
+echo "CMSMS admin_dir config:  $admin_dir_config"
 echo "Diff file to apply:      $diff_file"
 echo "CMSMS config file perm:  $configFilePerm"
 echo "Current CMSMS Version:   $cmsms_version_current"
@@ -241,21 +241,21 @@ echo " Done!"
 
 # 4. Edit config file admin dir setting to default location
 echo "Editing admin_dir config..."
-oldConfigLine="\$config\['admin_dir'\] = '$admin_dir_custom';"
+oldConfigLine="\$config\['admin_dir'\] = '$admin_dir_config';"
 newConfigLine="\$config\['admin_dir'\] = '$admin_dir_default';"
 sed -i "s/$oldConfigLine/$newConfigLine/" $configFile
 echo " Done!"
 
 # 5. Move the admin dir to default location
 echo "Rename admin_dir to default setting for the update if needed..."
-if [ $admin_dir_custom != $admin_dir_default ]; then
+if [ $admin_dir_config != $admin_dir_default ]; then
   echo " CMSMS admin_dir had custom setting"
   echo " Renaming admin_dir to the default for the update..."
   echo " Renaming"
-  echo "  $CMSMSDir/$admin_dir_custom"
+  echo "  $CMSMSDir/$admin_dir_config"
   echo "  to"
   echo "  $CMSMSDir/$admin_dir_default"
-  mv $CMSMSDir/$admin_dir_custom $CMSMSDir/$admin_dir_default
+  mv $CMSMSDir/$admin_dir_config $CMSMSDir/$admin_dir_default
   echo " Done!"
 else
   echo " CMSMS admin_dir had default setting"
@@ -269,14 +269,14 @@ echo " Done!"
 
 # 7. Move the admin dir to custom location
 echo "Rename admin_dir back to custom setting if needed..."
-if [ $admin_dir_custom != $admin_dir_default ]; then
+if [ $admin_dir_config != $admin_dir_default ]; then
   echo " CMSMS admin_dir had custom setting"
   echo " Renaming admin_dir back to custom setting..."
   echo " Renaming"
   echo "  $CMSMSDir/$admin_dir_default"
   echo "  to"
-  echo "  $CMSMSDir/$admin_dir_custom"
-  mv $CMSMSDir/$admin_dir_default $CMSMSDir/$admin_dir_custom
+  echo "  $CMSMSDir/$admin_dir_config"
+  mv $CMSMSDir/$admin_dir_default $CMSMSDir/$admin_dir_config
   echo " Done!"
 else
   echo " CMSMS admin_dir had default setting"
@@ -286,7 +286,7 @@ fi
 # 8. Edit config file admin dir setting to custom location
 echo "Editing admin_dir config..."
 oldConfigLine="\$config\['admin_dir'\] = '$admin_dir_default';"
-newConfigLine="\$config\['admin_dir'\] = '$admin_dir_custom';"
+newConfigLine="\$config\['admin_dir'\] = '$admin_dir_config';"
 sed -i "s/$oldConfigLine/$newConfigLine/" $configFile
 echo " Done!"
 
@@ -297,10 +297,10 @@ chmod $configFilePerm $configFile
 echo " Done!"
 
 # Everything should be done!
-admin_dir_custom_check=$(grep -Po "($config\['admin_dir'\] = ')\K(.*)(?=')" $configFile)
+admin_dir_config_check=$(grep -Po "($config\['admin_dir'\] = ')\K(.*)(?=')" $configFile)
 cmsms_version_current_check=$(grep -Po 'CMS_VERSION = "\K([0-9.]+)(?=")' $versionFile)
 echo
-echo "CMSMS admin_dir config:  $admin_dir_custom_check"
+echo "CMSMS admin_dir config:  $admin_dir_config_check"
 echo "Updated CMSMS Version:   $cmsms_version_current_check"
 echo
 
@@ -362,8 +362,8 @@ if $verify_checksums; then
     echo " Checksum file:  $checksum_file"
     echo " Showing only failed checksums"
     echo
-    # edit checksum_file to accommodate admin_dir_custom
-    sed -i "s#\./$admin_dir_default/#\./$admin_dir_custom/#g" $checksum_file
+    # edit checksum_file to accommodate admin_dir_config
+    sed -i "s#\./$admin_dir_default/#\./$admin_dir_config/#g" $checksum_file
 
     script_dir="$PWD"
     #echo $script_dir
@@ -373,9 +373,9 @@ if $verify_checksums; then
     # Verify file checksums
     md5sum --check --quiet $script_dir/$checksum_file
 
-    # edit checksum_file to accommodate admin_dir_custom
+    # edit checksum_file to accommodate admin_dir_config
     cd $script_dir
-    sed -i "s#\./$admin_dir_custom/#\./$admin_dir_default/#g" $checksum_file
+    sed -i "s#\./$admin_dir_config/#\./$admin_dir_default/#g" $checksum_file
   fi
 fi
 
