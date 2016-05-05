@@ -83,8 +83,8 @@ echo
 
 echo "You'll need to upload the appropriate .tar.gz diff file into the same directory"
 echo "as this script."
-#echo "You can also upload the corresponding .dat checksum file, and this script will"
-#echo "try to use it to verify the update."
+echo "You can also upload the corresponding .dat checksum file, and this script will"
+echo "try to use it to verify the update."
 echo
 
 # Ask the user to confirm CMSMSDir
@@ -395,6 +395,11 @@ if $verify_checksums; then
     fi
 
     # if updating using a diff, remove checksums for ./install directory
+    # this might not be needed after all since ./install shouldn't be
+    #  present before/after a diff
+    # might keep it to give user an option to keep temp checksum file
+    #  for use with built-in checksum verification to avoid lots of
+    #  errors about custom admin_dir and missing ./install files
     if $updateWithDiff; then
       sed -i -r "s#.+ \*\./install/.+##g" $checksum_file_temp
       sed -i -e /^$/d $checksum_file_temp
@@ -419,7 +424,10 @@ if $verify_checksums; then
   fi
 fi
 
-echo
-echo "The update script is complete!"
+echo "
+The update script is complete!
+You should now run any necessary additional steps recommended by the
+CMSMS Dev Team. You may also wish to run CMSMS' built-in checksum
+verification process."
 echo
 echo
