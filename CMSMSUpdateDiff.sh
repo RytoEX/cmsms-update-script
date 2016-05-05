@@ -117,6 +117,8 @@ configFile=$CMSMSDir/$configFileName
 versionFile=$CMSMSDir/$versionFileName
 # Get config file permissions
 configFilePerm=$(stat --printf '%a' $configFile)
+# Using a diff?
+updateWithDiff=true
 # Set default admin_dir
 admin_dir_default="admin"
 # Set flag for if there is a custom admin dir config setting
@@ -386,6 +388,12 @@ if $verify_checksums; then
     # edit checksum_file to accommodate admin_dir_config if needed
     if $hasCustomAdminDir; then
       sed -i "s#\./$admin_dir_default/#\./$admin_dir_config/#g" $checksum_file
+    fi
+
+    # if updating using a diff, remove checksums for ./install directory
+    if $updateWithDiff; then
+      sed -i -r "s#.+ \*\./install/.+##g" $checksum_file
+      sed -i -e /^$/d $checksum_file
     fi
 
     script_dir="$PWD"
