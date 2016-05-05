@@ -8,9 +8,6 @@
 # Version: 0.8
 
 
-# todo(ryto):  check CMSMSDir with trailing slash
-#   /home/rytoex/scripts/cmsms-update-script/cmsms_test//config.php
-#   Doesn't seem to cause it to fail, but should probably fix anyway.
 # todo(ryto):  usage/help message
 # todo(ryto):  see if this works with a full non-diff update
 #   it _should_ work, but will have to change diff_file detection
@@ -102,6 +99,8 @@ while true; do
 	esac
 done
 
+# Fix trailing slash on CMSMSDir
+CMSMSDir=${CMSMSDir%"/"}
 # Current datestamp
 datestamp=$(date +%Y-%m-%d)
 # Config file
