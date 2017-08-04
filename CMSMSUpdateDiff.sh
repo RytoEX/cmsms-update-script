@@ -72,7 +72,7 @@ function selectFile() {
 	fi
 	PS3="Select a file: "
 	local selected_file
-	select selected_file in $file_glob;
+	select selected_file in "$file_glob";
 	do
 		echo "$selected_file"
 		break
@@ -150,19 +150,19 @@ while true; do
 done
 
 # Fix trailing slash on CMSMSDir
-CMSMSDir=${CMSMSDir%"/"}
+CMSMSDir="${CMSMSDir%"/"}"
 # Current datestamp
-datestamp=$(date +%Y-%m-%d)
+datestamp="$(date +%Y-%m-%d)"
 # Config file
 configFileName="config.php"
 # Version file
 versionFileName="version.php"
 # Set full config path
-configFile=$CMSMSDir/$configFileName
+configFile="$CMSMSDir/$configFileName"
 # Set full version path
-versionFile=$CMSMSDir/$versionFileName
+versionFile="$CMSMSDir/$versionFileName"
 # Get config file permissions
-configFilePerm=$(stat --printf '%a' $configFile)
+configFilePerm="$(stat --printf '%a' $configFile)"
 # Using a diff?
 updateWithDiff=true
 # Set default admin_dir
@@ -171,11 +171,11 @@ admin_dir_default="admin"
 hasCustomAdminDir=true
 # Check for custom admin_dir setting
 admin_dir_config_default="custom"
-admin_dir_config=$(grep -Po "($config\['admin_dir'\] = ')\K(.*)(?=')" $configFile)
+admin_dir_config="$(grep -Po "($config\['admin_dir'\] = ')\K(.*)(?=')" $configFile)"
 # If admin_dir is not explicitly set, assume it's admin_dir_default ("admin")
 # Set hasCustomAdminDir to false
-if [ -z $admin_dir_config ] || [ $admin_dir_config == $admin_dir_default ]; then
-	admin_dir_config=$admin_dir_default
+if [ -z "$admin_dir_config" ] || [ "$admin_dir_config" == "$admin_dir_default" ]; then
+	admin_dir_config="$admin_dir_default"
 	hasCustomAdminDir=false
 fi
 
@@ -200,27 +200,27 @@ done
 
 # Current CMSMS Version
 #cmsms_version_current=$(grep -Po 'CMS_VERSION = "([0-9.]+)"' $versionFile | cut -d ' ' -f3 | tr -d '"')
-cmsms_version_current=$(grep -Po 'CMS_VERSION = "\K([0-9.]+)(?=")' $versionFile)
+cmsms_version_current="$(grep -Po 'CMS_VERSION = "\K([0-9.]+)(?=")' $versionFile)"
 
 # Get a diff file
 diff_file_glob="cms*diff-$cmsms_version_current-*.tar.gz"
-diff_file_count=$(ls $diff_file_glob | wc -l)
-if [ $diff_file_count -gt 1 ]; then
+diff_file_count="$(ls $diff_file_glob | wc -l)"
+if [ "$diff_file_count" -gt 1 ]; then
 	# multiple valid diff files present
 	echo "There are too many valid diff files.  Please choose one."
-	diff_file=$(selectFile "$diff_file_glob")
-elif [ $diff_file_count -eq 0 ]; then
+	diff_file="$(selectFile "$diff_file_glob")"
+elif [ "$diff_file_count" -eq 0 ]; then
 	# no valid diff files present
 	echo "There doesn't seem to be a valid diff file."
 	echo "Please add a diff file to this directory and rerun this script."
 	echo
 	exit 3
 else
-	diff_file=$(ls $diff_file_glob)
+	diff_file="$(ls $diff_file_glob)"
 fi
 
 # New CMSMS Version
-cmsms_version_new=$(echo $diff_file | grep -Po "\-\K([0-9.]*)(?=.tar.gz)")
+cmsms_version_new="$(echo $diff_file | grep -Po "\-\K([0-9.]*)(?=.tar.gz)")"
 
 # Ask the user to confirm diff_file
 while true; do
@@ -281,12 +281,12 @@ echo "  $configFile"
 echo "  to"
 echo "  $configFile.bak.$datestamp"
 #cp -p $CMSMSDir/$config $CMSMSDir/$config
-cp -p $configFile $configFile.bak.$datestamp
+cp -p "$configFile" "$configFile.bak.$datestamp"
 echo " Done!"
 
 # 3. Enable owner write permission on config.php
 echo "Unlocking config file..."
-chmod u+w $configFile
+chmod u+w "$configFile"
 echo " Done!"
 
 # 4. Edit config file admin dir setting to default location
@@ -299,7 +299,7 @@ if $hasCustomAdminDir; then
 	echo "  \$config['admin_dir'] = '$admin_dir_default';"
 	oldConfigLine="\$config\['admin_dir'\] = '$admin_dir_config';"
 	newConfigLine="\$config\['admin_dir'\] = '$admin_dir_default';"
-	sed -i "s/$oldConfigLine/$newConfigLine/" $configFile
+	sed -i "s/$oldConfigLine/$newConfigLine/" "$configFile"
 	echo " Done!"
 else
 	echo " No custom admin_dir setting."
@@ -315,7 +315,7 @@ if $hasCustomAdminDir; then
 	echo "  $CMSMSDir/$admin_dir_config"
 	echo "  to"
 	echo "  $CMSMSDir/$admin_dir_default"
-	mv $CMSMSDir/$admin_dir_config $CMSMSDir/$admin_dir_default
+	mv "$CMSMSDir/$admin_dir_config" "$CMSMSDir/$admin_dir_default"
 	echo " Done!"
 else
 	echo " CMSMS admin_dir had default setting"
@@ -324,7 +324,7 @@ fi
 
 # 6. Unpack diff
 echo "Unpacking the diff"
-tar -xzf $diff_file -C $CMSMSDir
+tar -xzf "$diff_file" -C "$CMSMSDir"
 echo " Done!"
 
 # 7. Move the admin dir to custom location
@@ -336,7 +336,7 @@ if $hasCustomAdminDir; then
 	echo "  $CMSMSDir/$admin_dir_default"
 	echo "  to"
 	echo "  $CMSMSDir/$admin_dir_config"
-	mv $CMSMSDir/$admin_dir_default $CMSMSDir/$admin_dir_config
+	mv "$CMSMSDir/$admin_dir_default" "$CMSMSDir/$admin_dir_config"
 	echo " Done!"
 else
 	echo " CMSMS admin_dir had default setting"
@@ -353,7 +353,7 @@ if $hasCustomAdminDir; then
 	echo "  \$config['admin_dir'] = '$admin_dir_config';"
 	oldConfigLine="\$config\['admin_dir'\] = '$admin_dir_default';"
 	newConfigLine="\$config\['admin_dir'\] = '$admin_dir_config';"
-	sed -i "s/$oldConfigLine/$newConfigLine/" $configFile
+	sed -i "s/$oldConfigLine/$newConfigLine/" "$configFile"
 	echo " Done!"
 else
 	echo " No custom admin_dir setting."
@@ -363,19 +363,19 @@ fi
 # 9. Restore original permissions on config file
 echo "Restoring config file permissions..."
 echo " Changing config file permission to $configFilePerm"
-chmod $configFilePerm $configFile
+chmod "$configFilePerm" "$configFile"
 echo " Done!"
 
 # Everything should be done!
-admin_dir_config_check=$(grep -Po "($config\['admin_dir'\] = ')\K(.*)(?=')" $configFile)
-cmsms_version_current_check=$(grep -Po 'CMS_VERSION = "\K([0-9.]+)(?=")' $versionFile)
+admin_dir_config_check="$(grep -Po "($config\['admin_dir'\] = ')\K(.*)(?=')" $configFile)"
+cmsms_version_current_check="$(grep -Po 'CMS_VERSION = "\K([0-9.]+)(?=")' $versionFile)"
 echo
 echo "CMSMS admin_dir config:  $admin_dir_config_check"
 echo "Updated CMSMS Version:   $cmsms_version_current_check"
 echo
 
 # Check that the diff update version and the new current version match
-if [ $cmsms_version_new == $cmsms_version_current_check ]; then
+if [ "$cmsms_version_new" == "$cmsms_version_current_check" ]; then
 	echo "The update should be complete!"
 	echo
 else
@@ -413,7 +413,7 @@ if $verify_checksums; then
 	if [ $checksum_file_count -gt 1 ]; then
 		# multiple checksum files present
 		echo "There are too many checksum files.  Please choose one."
-		checksum_file=$(selectFile "$checksum_file_glob")
+		checksum_file="$(selectFile "$checksum_file_glob")"
 		continue_checksum=true
 	elif [ $checksum_file_count -eq 0 ]; then
 		# no valid checksum files present
@@ -422,7 +422,7 @@ if $verify_checksums; then
 		echo "Skipping the checksum verification."
 		continue_checksum=false
 	else
-		checksum_file=$(ls $checksum_file_glob)
+		checksum_file="$(ls $checksum_file_glob)"
 		continue_checksum=true
 	fi
 
@@ -437,7 +437,7 @@ if $verify_checksums; then
 		cp -p "$checksum_file" "$checksum_file_temp"
 		# edit checksum file to accommodate admin_dir_config if needed
 		if $hasCustomAdminDir; then
-			sed -i "s#\./$admin_dir_default/#\./$admin_dir_config/#g" $checksum_file_temp
+			sed -i "s#\./$admin_dir_default/#\./$admin_dir_config/#g" "$checksum_file_temp"
 		fi
 
 		# if updating using a diff, remove checksums for ./install directory
@@ -447,22 +447,22 @@ if $verify_checksums; then
 		#  for use with built-in checksum verification to avoid lots of
 		#  errors about custom admin_dir and missing ./install files
 		if $updateWithDiff; then
-			sed -i -r "s#.+ \*\./install/.+##g" $checksum_file_temp
-			sed -i -e /^$/d $checksum_file_temp
+			sed -i -r "s#.+ \*\./install/.+##g" "$checksum_file_temp"
+			sed -i -e "/^$/d" "$checksum_file_temp"
 		fi
 
 		script_dir="$PWD"
 		#echo $script_dir
-		cd $CMSMSDir
+		cd "$CMSMSDir"
 		#echo $PWD
 
 		# Verify file checksums
-		md5sum --check --quiet $script_dir/$checksum_file_temp
+		md5sum --check --quiet "$script_dir/$checksum_file_temp"
 
 		# edit checksum file to restore original admin_dir setting if needed
-		cd $script_dir
+		cd "$script_dir"
 		if $hasCustomAdminDir; then
-			sed -i "s#\./$admin_dir_config/#\./$admin_dir_default/#g" $checksum_file_temp
+			sed -i "s#\./$admin_dir_config/#\./$admin_dir_default/#g" "$checksum_file_temp"
 		fi
 
 		# remove temp checksum file if we want
