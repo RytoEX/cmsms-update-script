@@ -4,9 +4,9 @@
 #
 # Author:   Ryan Foster
 # Created:  April 19, 2016
-# Updated:  May 5, 2016
-# Version:  0.8
-# Name:     Are We There Yet
+# Updated:  August 4, 2017
+# Version:  0.9-dev
+# Name:     Why Did I Do This Again
 #
 # CMSMSUpdateDiff - Help perform the CMS Made Simple (CMSMS) 1.x diff update process
 # Copyright (C) 2016  Ryan Foster
@@ -58,9 +58,9 @@
 
 
 script_author="Ryan Foster"
-script_updated="May 5, 2016"
-script_version="0.8"
-script_version_name="Are We There Yet"
+script_updated="August 4, 2017"
+script_version="0.9-dev"
+script_version_name="Why Did I Do This Again"
 script_cmd="CMSMSUpdateDiff"
 
 
